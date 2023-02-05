@@ -18,12 +18,12 @@ def get_audio_duration(in_audio_path):
 
 
 '''takes .wav file, no spaces in path, will overwrite'''
-def clip_audio(in_audio_path, cliped_audio_path, start_time, end_time):
-    cmd = 'ffmpeg -i ' + in_audio_path + ' -ss ' + str(start_time) + ' -to ' + str(end_time) + ' -c copy ' + cliped_audio_path + ' -y'
+def clip_audio(in_audio_path, clipped_audio_path, start_time, end_time):
+    cmd = 'ffmpeg -i ' + in_audio_path + ' -ss ' + str(start_time) + ' -to ' + str(end_time) + ' -c copy ' + clipped_audio_path + ' -y'
     subprocess.call(cmd, shell = False)
 
 
-# returns False if there is no speach in audio
+# returns False if there is no speech in audio
 def transcribe_audio(in_audio_path):
     # use the audio file as the audio source                                        
     r = sr.Recognizer()
@@ -35,12 +35,7 @@ def transcribe_audio(in_audio_path):
         return False
 
 
-
-
-
-# ffprobe -i "C:\Users\Brandon\Documents\Personal_Projects\my_movie_tools_big_data\Screen_trimmed.wav" -show_entries format=duration -v quiet -of csv="p=0"
-
-
 if __name__ == '__main__':
-#     print(get_audio_duration("C:\\Users\\Brandon\\Documents\\Personal_Projects\\my_movie_tools_big_data\\Screen_trimmed.wav"))
-    print(transcribe_audio("C:\\Users\\Brandon\\Documents\\Personal_Projects\\my_movie_tools\\clipped_audio.wav"))
+    import os.path as path
+    print("Running ",  path.abspath(__file__),  '...')
+    print("End of Main")
