@@ -8,6 +8,9 @@ import speech_recognition as sr
 from os import path
 from pydub import AudioSegment
 
+SCRIPT_PARENT_DIR_PATH = os.path.abspath(os.path.dirname(__file__))
+TEMP_WORKING_AUDIO_CLIPS_DIR_PATH = join(SCRIPT_PARENT_DIR_PATH, "TMP_WRK_AUDIO_CLIPS")
+
 
 def get_audio_from_video(in_vid_path, out_audio_path):
     ''' Returns .wav file, no spaces in path, will overwrite '''
@@ -44,9 +47,9 @@ def transcribe_audio(in_audio_path, with_confidence = False):
     
 
 def get_transcript_from_vid(in_vid_path, start_time = 0, end_time = None, with_confidence = False):
-
-    # tmp_whole_vid_audio_wav_path = join(os.path.dirname(in_vid_path), f"{Path(in_vid_path).stem}_whole_tmp.wav")
-    tmp_whole_vid_audio_wav_path = mktemp(prefix = os.path.dirname(in_vid_path) + os.path.sep, suffix=f"_whole_tmp.wav")
+    # tmp_whole_vid_audio_wav_path = mktemp(prefix = os.path.dirname(in_vid_path) + os.path.sep, suffix=f"_whole_tmp.wav")
+    Path(TEMP_WORKING_AUDIO_CLIPS_DIR_PATH).mkdir(parents=True, exist_ok=True)
+    tmp_whole_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_whole_tmp.wav")
     print(f"{tmp_whole_vid_audio_wav_path=}")
     get_audio_from_video(in_vid_path, tmp_whole_vid_audio_wav_path)
 
@@ -54,13 +57,13 @@ def get_transcript_from_vid(in_vid_path, start_time = 0, end_time = None, with_c
     if end_time == None:
         transcript_str = transcribe_audio(tmp_whole_vid_audio_wav_path, with_confidence)
     else:
-        tmp_clip_vid_audio_wav_path = mktemp(prefix = os.path.dirname(in_vid_path), suffix=f"_clip_tmp.wav")
+        # tmp_clip_vid_audio_wav_path = mktemp(prefix = os.path.dirname(in_vid_path), suffix=f"_clip_tmp.wav")
+        tmp_clip_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_clip_tmp.wav")
         clip_audio(tmp_whole_vid_audio_wav_path, tmp_clip_vid_audio_wav_path, start_time, end_time)
         transcript_str = transcribe_audio(tmp_clip_vid_audio_wav_path, with_confidence)
         os.remove(tmp_clip_vid_audio_wav_path)
 
     os.remove(tmp_whole_vid_audio_wav_path)
-    # audio_clip = clip_audio(in_audio_path, clipped_audio_path, start_time, end_time)
 
     return transcript_str
 
