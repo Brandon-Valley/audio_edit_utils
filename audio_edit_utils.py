@@ -55,8 +55,8 @@ def get_transcript_from_audio(in_audio_path, start_time_sec = 0, end_time_sec = 
         clip_audio(in_audio_path, tmp_clip_vid_audio_wav_path, start_time_sec, end_time_sec)
         transcript_result = transcribe_audio(tmp_clip_vid_audio_wav_path, with_confidence)
         os.remove(tmp_clip_vid_audio_wav_path)
-
     return transcript_result
+
 
 def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None, with_confidence = False):
     print(f"{start_time_sec=}")
@@ -67,9 +67,7 @@ def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None
     get_audio_from_video(in_vid_path, tmp_whole_vid_audio_wav_path)
 
     transcript_result = get_transcript_from_audio(tmp_whole_vid_audio_wav_path, start_time_sec, end_time_sec, with_confidence)
-
     os.remove(tmp_whole_vid_audio_wav_path)
-
     return transcript_result
 
 
