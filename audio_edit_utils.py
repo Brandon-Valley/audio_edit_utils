@@ -44,7 +44,19 @@ def transcribe_audio(in_audio_path, with_confidence = False):
         return r.recognize_google(audio, with_confidence = with_confidence)
     except sr.UnknownValueError:
         return False
-    
+
+
+def get_transcript_from_audio(in_audio_path, start_time_sec = 0, end_time_sec = None, with_confidence = False):
+    transcript_result = None
+    if end_time_sec == None:
+        transcript_result = transcribe_audio(in_audio_path, with_confidence)
+    else:
+        tmp_clip_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_clip_tmp.wav")
+        clip_audio(in_audio_path, tmp_clip_vid_audio_wav_path, start_time_sec, end_time_sec)
+        transcript_result = transcribe_audio(tmp_clip_vid_audio_wav_path, with_confidence)
+        os.remove(tmp_clip_vid_audio_wav_path)
+
+    return transcript_result
 
 def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None, with_confidence = False):
     print(f"{start_time_sec=}")
@@ -54,18 +66,13 @@ def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None
     print(f"{tmp_whole_vid_audio_wav_path=}")
     get_audio_from_video(in_vid_path, tmp_whole_vid_audio_wav_path)
 
-    transcript_str = None
-    if end_time_sec == None:
-        transcript_str = transcribe_audio(tmp_whole_vid_audio_wav_path, with_confidence)
-    else:
-        tmp_clip_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_clip_tmp.wav")
-        clip_audio(tmp_whole_vid_audio_wav_path, tmp_clip_vid_audio_wav_path, start_time_sec, end_time_sec)
-        transcript_str = transcribe_audio(tmp_clip_vid_audio_wav_path, with_confidence)
-        os.remove(tmp_clip_vid_audio_wav_path)
+    transcript_result = get_transcript_from_audio(tmp_whole_vid_audio_wav_path, start_time_sec, end_time_sec, with_confidence)
 
     os.remove(tmp_whole_vid_audio_wav_path)
 
-    return transcript_str
+    return transcript_result
+
+
 
 
 if __name__ == '__main__':
