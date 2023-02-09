@@ -34,13 +34,29 @@ def clip_audio(in_audio_path, clipped_audio_path, start_time_sec, end_time_sec):
     sp.call(cmd, shell = False)
 
 
-def transcribe_audio(in_audio_path, with_confidence = False):
+# def get_audio_from_file(in_audio_file_path, recognizer = None)
+#     if recognizer == None:
+#         recognizer = sr.Recognizer()
+
+
+    # def record(self, source, duration=None, offset=None):
+    #     """
+    #     Records up to ``duration`` seconds of audio from ``source`` (an ``AudioSource`` instance) starting at ``offset`` (or at the beginning if not specified) into an ``AudioData`` instance, which it returns.
+
+    #     If ``duration`` is not specified, then it will record until there is no more audio input.
+    #     """
+
+
+def transcribe_audio_from_file(in_audio_path, with_confidence = False):
     ''' Returns False if there is no speech in audio '''
     # use the audio file as the audio source
+    print("getting Recognizer...")
     r = sr.Recognizer()
+    print("getting audio ...")
     with sr.AudioFile(in_audio_path) as source:
             audio = r.record(source)  # read the entire audio file
     try:
+        print("about to recognize_google")
         return r.recognize_google(audio, with_confidence = with_confidence)
     except sr.UnknownValueError:
         return False
@@ -49,11 +65,11 @@ def transcribe_audio(in_audio_path, with_confidence = False):
 def get_transcript_from_audio(in_audio_path, start_time_sec = 0, end_time_sec = None, with_confidence = False):
     transcript_result = None
     if end_time_sec == None:
-        transcript_result = transcribe_audio(in_audio_path, with_confidence)
+        transcript_result = transcribe_audio_from_file(in_audio_path, with_confidence)
     else:
         tmp_clip_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_clip_tmp.wav")
         clip_audio(in_audio_path, tmp_clip_vid_audio_wav_path, start_time_sec, end_time_sec)
-        transcript_result = transcribe_audio(tmp_clip_vid_audio_wav_path, with_confidence)
+        transcript_result = transcribe_audio_from_file(tmp_clip_vid_audio_wav_path, with_confidence)
         os.remove(tmp_clip_vid_audio_wav_path)
     return transcript_result
 
@@ -86,7 +102,7 @@ if __name__ == '__main__':
     #             clipped_audio_path = "C:/p/tik_tb_vid_big_data/ignore/BIG_BOY_fg_TBS/Family_Guy___TBS/Family_Guy__National_Dog_Day__Clip____TBS/clip.wav",
     #              start_time_sec=0, end_time_sec=1.369)
 
-    # t = transcribe_audio("C:/p/tik_tb_vid_big_data/ignore/BIG_BOY_fg_TBS/Family_Guy___TBS/Family_Guy__National_Dog_Day__Clip____TBS/clip.wav")
+    # t = transcribe_audio_from_file("C:/p/tik_tb_vid_big_data/ignore/BIG_BOY_fg_TBS/Family_Guy___TBS/Family_Guy__National_Dog_Day__Clip____TBS/clip.wav")
     # print(f"{t=}")
 
     t,c = get_transcript_from_vid("C:/p/tik_tb_vid_big_data/ignore/BIG_BOY_fg_TBS/Family_Guy___TBS/Family_Guy__National_Dog_Day__Clip____TBS/Family_Guy__National_Dog_Day__Clip____TBS.mp4",
