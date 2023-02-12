@@ -74,7 +74,8 @@ def get_transcript_from_audio(in_audio_path, start_time_sec = 0, end_time_sec = 
     return transcript_result
 
 
-def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None, with_confidence = False):
+def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None, with_confidence = False, return_if_with_confidence_and_false = (False, 0)):
+    ''' If with_confidence == True and returning the raw transcript_result (even if it's False) is desired, set return_if_with_confidence_and_false == "DISABLE" '''
     Path(TEMP_WORKING_AUDIO_CLIPS_DIR_PATH).mkdir(parents=True, exist_ok=True)
     tmp_whole_vid_audio_wav_path = mktemp(prefix = TEMP_WORKING_AUDIO_CLIPS_DIR_PATH + os.path.sep, suffix=f"_whole_tmp.wav")
     print(f"{tmp_whole_vid_audio_wav_path=}")
@@ -82,6 +83,10 @@ def get_transcript_from_vid(in_vid_path, start_time_sec = 0, end_time_sec = None
 
     transcript_result = get_transcript_from_audio(tmp_whole_vid_audio_wav_path, start_time_sec, end_time_sec, with_confidence)
     os.remove(tmp_whole_vid_audio_wav_path)
+
+    if transcript_result == False and with_confidence and return_if_with_confidence_and_false != "DISABLE":
+        return return_if_with_confidence_and_false
+
     return transcript_result
 
 
